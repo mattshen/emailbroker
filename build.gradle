@@ -27,7 +27,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('com.squareup.okhttp3:okhttp:3.9.1')
-
+	compile('commons-io:commons-io:2.4')
 
 	compileOnly('org.projectlombok:lombok')
 

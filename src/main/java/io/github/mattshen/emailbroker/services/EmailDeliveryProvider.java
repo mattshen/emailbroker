@@ -4,5 +4,6 @@ import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
 import io.github.mattshen.emailbroker.models.SimpleEmailRequest;
 
 public interface EmailDeliveryProvider {
+    String name();
     EmailDeliveryResponse send(SimpleEmailRequest request);
 }

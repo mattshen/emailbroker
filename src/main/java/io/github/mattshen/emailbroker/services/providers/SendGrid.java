@@ -37,6 +37,10 @@ public class SendGrid implements EmailDeliveryProvider {
         this.conf = conf;
     }
 
+    public String name() {
+        return Constants.EMAIL_PROVIDER_SENDGRID;
+    }
+
     @Override
     public EmailDeliveryResponse send(SimpleEmailRequest request) {
 

@@ -29,6 +29,10 @@ public class Mailgun implements EmailDeliveryProvider {
         this.conf = conf;
     }
 
+    public String name() {
+        return Constants.EMAIL_PROVIDER_MAILGUN;
+    }
+
     @Override
     public EmailDeliveryResponse send(SimpleEmailRequest request) {
 
