@@ -1,25 +1,31 @@
 package io.github.mattshen.emailbroker.services;
 
-import io.github.mattshen.emailbroker.messages.EmailDeliveryResponse;
-import io.github.mattshen.emailbroker.messages.EmailRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
+import io.github.mattshen.emailbroker.models.SimpleEmailRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class EmailDeliveryService {
 
-    @Autowired
-    @Qualifier("mailgun")
     private EmailDeliveryProvider primaryProvider;
 
-    @Autowired
-    @Qualifier("sendgrid")
     private EmailDeliveryProvider secondaryProvider;
 
+    public EmailDeliveryService(@Qualifier("sendgrid") EmailDeliveryProvider first,
+                                @Qualifier("mailgun") EmailDeliveryProvider second) {
 
-    public EmailDeliveryResponse send(EmailRequest request) {
-        return primaryProvider.send(request);
+        this.primaryProvider = first;
+        this.secondaryProvider = second;
+    }
+
+    public EmailDeliveryResponse send(SimpleEmailRequest request) {
+        EmailDeliveryResponse response = primaryProvider.send(request);
+        if (response.isSuccess()) {
+            return response;
+        } else {
+            return secondaryProvider.send(request);
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-package io.github.mattshen.emailbroker.messages;
+package io.github.mattshen.emailbroker.models;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,4 +18,5 @@ public class EmailDeliveryResponse {
         this.success = success;
         this.message = message;
     }
+
 }

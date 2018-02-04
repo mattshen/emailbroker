@@ -3,51 +3,43 @@ package io.github.mattshen.emailbroker.services.providers;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.mattshen.emailbroker.Configuration;
-import io.github.mattshen.emailbroker.messages.EmailDeliveryResponse;
-import io.github.mattshen.emailbroker.messages.EmailRequest;
-import io.github.mattshen.emailbroker.messages.SendGridRequest;
+import io.github.mattshen.emailbroker.Utils;
+import io.github.mattshen.emailbroker.models.Email;
+import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
+import io.github.mattshen.emailbroker.models.SimpleEmailRequest;
 import io.github.mattshen.emailbroker.services.EmailDeliveryProvider;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Component("sendgrid")
 public class SendGrid implements EmailDeliveryProvider {
 
-    private OkHttpClient httpClient;
-
-    private Configuration conf;
-
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
+    private OkHttpClient httpClient;
+    private Configuration conf;
 
     public SendGrid(Configuration conf) {
-        this.httpClient = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .build();
+        this.httpClient = Utils.createHttpClient();
         this.conf = conf;
     }
 
     @Override
-    public EmailDeliveryResponse send(EmailRequest request) {
+    public EmailDeliveryResponse send(SimpleEmailRequest request) {
 
-        ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);;
-
-        SendGridRequest requestV2 = new SendGridRequest(
-                request.getTo(),
-                request.getFrom(),
-                request.getSubject(),
-                request.getText()
-        );
+        ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         try {
-            String data = mapper.writeValueAsString(requestV2);
+            String data = mapper.writeValueAsString(buildSendGridRequest(request));
 
             RequestBody jsonBody = RequestBody.create(JSON, data);
             Request req = new Request.Builder()
@@ -57,6 +49,9 @@ public class SendGrid implements EmailDeliveryProvider {
                     .build();
 
             try (Response response = httpClient.newCall(req).execute()) {
+                log.info(response.headers().toString());
+                log.info("HTTP CODE: " + response.code());
+
                 return new EmailDeliveryResponse("test", response.isSuccessful(), response.body().string());
             } catch (IOException e) {
                 throw e;
@@ -67,5 +62,47 @@ public class SendGrid implements EmailDeliveryProvider {
             return new EmailDeliveryResponse(true, e.getMessage());
         }
 
+    }
+
+    private SendGridRequest buildSendGridRequest(SimpleEmailRequest request) {
+        SendGridRequest sgReq = new SendGridRequest();
+        sgReq.setFrom(request.getFrom());
+        sgReq.setSubject(request.getSubject());
+        sgReq.setPersonalizations(Arrays.asList(new Recipients(request.getTo(), request.getCc(), request.getBcc())));
+        sgReq.setContent(Arrays.asList(new Content(request.getContent())));
+        return sgReq;
+    }
+
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    private static class SendGridRequest {
+
+        public List<Content> content;
+        private Email from;
+        private String subject;
+        private List<Recipients> personalizations;
+
+    }
+
+    @AllArgsConstructor
+    @Data
+    private static class Content {
+        private String type = "text/plain";
+        private String value;
+
+        public Content(String value) {
+            this.value = value;
+        }
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    private static class Recipients {
+        private List<Email> to;
+        private List<Email> cc;
+        private List<Email> bcc;
     }
 }

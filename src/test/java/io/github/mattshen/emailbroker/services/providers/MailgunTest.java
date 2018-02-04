@@ -1,32 +1,24 @@
 package io.github.mattshen.emailbroker.services.providers;
 
-import io.github.mattshen.emailbroker.messages.EmailDeliveryResponse;
-import io.github.mattshen.emailbroker.messages.EmailRequest;
-import org.junit.Before;
+import io.github.mattshen.emailbroker.TestUtils;
+import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
+import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.*;
-
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class MailgunTest {
 
+    @Autowired
     private Mailgun mailgun;
 
-    @Before
-    public void setUp() {
-        mailgun = new Mailgun();
-    }
-
     @Test
-    public void send() {
-
-        EmailRequest request = new EmailRequest();
-        request.setFrom("lovelywib@gmail.com");
-        request.setTo("lovelywib@gmail.com");
-        request.setSubject("testing mailgun");
-        request.setText("It works!!!");
-
-        EmailDeliveryResponse res = mailgun.send(request);
-        System.out.println(res.getMessage());
-
+    public void send_should_work() {
+        EmailDeliveryResponse res = mailgun.send(TestUtils.createSimpleEmailRequest());
+        Assert.assertTrue(res.isSuccess());
     }
 }

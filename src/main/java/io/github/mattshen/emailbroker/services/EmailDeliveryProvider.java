@@ -1,10 +1,8 @@
 package io.github.mattshen.emailbroker.services;
 
-import io.github.mattshen.emailbroker.messages.EmailDeliveryResponse;
-import io.github.mattshen.emailbroker.messages.EmailRequest;
+import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
+import io.github.mattshen.emailbroker.models.SimpleEmailRequest;
 
 public interface EmailDeliveryProvider {
-
-    EmailDeliveryResponse send(EmailRequest request);
-
+    EmailDeliveryResponse send(SimpleEmailRequest request);
 }

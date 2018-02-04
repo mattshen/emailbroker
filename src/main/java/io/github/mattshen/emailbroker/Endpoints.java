@@ -1,13 +1,13 @@
 package io.github.mattshen.emailbroker;
 
-import io.github.mattshen.emailbroker.messages.EmailDeliveryResponse;
-import io.github.mattshen.emailbroker.messages.EmailRequest;
-import io.github.mattshen.emailbroker.messages.ApiResponse;
+import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
+import io.github.mattshen.emailbroker.models.SimpleEmailRequest;
+import io.github.mattshen.emailbroker.models.ApiResponse;
 import io.github.mattshen.emailbroker.services.EmailDeliveryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/v1/emails")
@@ -22,7 +22,7 @@ public class Endpoints {
 
     @PostMapping
     @ResponseBody
-    public ResponseEntity<ApiResponse> send(@RequestBody EmailRequest request) {
+    public ResponseEntity<ApiResponse> send(@Valid @RequestBody SimpleEmailRequest request) {
         EmailDeliveryResponse deliveryResponse = service.send(request);
         return ResponseEntity.ok(new ApiResponse(deliveryResponse.isSuccess(), deliveryResponse.getMessage()));
     }
