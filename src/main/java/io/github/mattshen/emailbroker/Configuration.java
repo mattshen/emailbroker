@@ -24,4 +24,6 @@ public class Configuration {
     @Value("${MAILGUN_API_PASSWORD}")
     private String mailgunApiPassword;
 
+
+
 }

@@ -17,6 +17,10 @@ public class Email {
     @org.hibernate.validator.constraints.Email
     private String email;
 
+    public Email(String email) {
+        this.email = email;
+    }
+
     public String toString(){
         return StringUtils.hasLength(name) ? name + " <" + email + ">" : email;
     }

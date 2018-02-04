@@ -1,27 +1,21 @@
 package io.github.mattshen.emailbroker.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Map;
-
-@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Setter(value = AccessLevel.NONE)
 public class ApiResponse {
 
-    private boolean success = false;
-    private String message;
+    private boolean success;
+    private EmailDeliveryResponse deliveryResult;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Map<String, Object> data;
-
-    public ApiResponse(boolean success, String message) {
+    public ApiResponse(boolean success, EmailDeliveryResponse deliveryResult) {
         this.success = success;
-        this.message = message;
+        this.deliveryResult = deliveryResult;
     }
 
 }

@@ -31,16 +31,16 @@ public class EmailDeliveryServiceTest {
     public void when_1st_success_return_1st() {
 
         SimpleEmailRequest req1 = new SimpleEmailRequest();
-        EmailDeliveryResponse res1 = new EmailDeliveryResponse(true, "1st response");
+        EmailDeliveryResponse res1 = new EmailDeliveryResponse(true, 200, "id-res1");
 
         SimpleEmailRequest req2 = new SimpleEmailRequest();
-        EmailDeliveryResponse res2 = new EmailDeliveryResponse(true, "2nd response");
+        EmailDeliveryResponse res2 = new EmailDeliveryResponse(true, 200, "id-res2");
 
         when(first.send(req1)).thenReturn(res1);
         when(second.send(req2)).thenReturn(res2);
 
         EmailDeliveryResponse res = service.send(req1);
-        Assert.assertEquals("1st response", res.getMessage());
+        Assert.assertEquals("id-res1", res.getId());
 
     }
 
@@ -49,16 +49,16 @@ public class EmailDeliveryServiceTest {
     public void when_1st_fail_return_2st() {
 
         SimpleEmailRequest req1 = new SimpleEmailRequest();
-        EmailDeliveryResponse res1 = new EmailDeliveryResponse(false, "1st response");
+        EmailDeliveryResponse res1 = new EmailDeliveryResponse(false, 400, "id-res1");
 
         SimpleEmailRequest req2 = new SimpleEmailRequest();
-        EmailDeliveryResponse res2 = new EmailDeliveryResponse(true, "2nd response");
+        EmailDeliveryResponse res2 = new EmailDeliveryResponse(true, 200, "id-res2");
 
         when(first.send(req1)).thenReturn(res1);
         when(second.send(req2)).thenReturn(res2);
 
         EmailDeliveryResponse res = service.send(req1);
-        Assert.assertEquals("2nd response", res.getMessage());
+        Assert.assertEquals("id-res2", res.getId());
 
     }
 

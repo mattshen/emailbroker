@@ -1,22 +1,20 @@
 package io.github.mattshen.emailbroker.models;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Setter;
 
 @AllArgsConstructor
 @Data
-@Setter(value = AccessLevel.NONE)
 public class EmailDeliveryResponse {
 
     private String id;
+    private int httpCode;
     private boolean success;
-    private String message;
 
-    public EmailDeliveryResponse(boolean success, String message) {
+    public EmailDeliveryResponse(boolean success, int httpCode, String id) {
         this.success = success;
-        this.message = message;
+        this.httpCode = httpCode;
+        this.id = id;
     }
 
 }

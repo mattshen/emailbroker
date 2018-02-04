@@ -3,6 +3,7 @@ package io.github.mattshen.emailbroker.services.providers;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.mattshen.emailbroker.Configuration;
+import io.github.mattshen.emailbroker.Constants;
 import io.github.mattshen.emailbroker.Utils;
 import io.github.mattshen.emailbroker.models.Email;
 import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
@@ -13,14 +14,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
-@Component("sendgrid")
+@Component(Constants.EMAIL_PROVIDER_SENDGRID)
 public class SendGrid implements EmailDeliveryProvider {
 
     public static final MediaType JSON
@@ -49,17 +53,17 @@ public class SendGrid implements EmailDeliveryProvider {
                     .build();
 
             try (Response response = httpClient.newCall(req).execute()) {
-                log.info(response.headers().toString());
-                log.info("HTTP CODE: " + response.code());
-
-                return new EmailDeliveryResponse("test", response.isSuccessful(), response.body().string());
+                return new EmailDeliveryResponse(
+                        response.isSuccessful(),
+                        response.code(),
+                        response.header("X-Message-Id")
+                );
             } catch (IOException e) {
                 throw e;
             }
-
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            return new EmailDeliveryResponse(true, e.getMessage());
+            return new EmailDeliveryResponse(false, HttpStatus.BAD_REQUEST.value(), "");
         }
 
     }

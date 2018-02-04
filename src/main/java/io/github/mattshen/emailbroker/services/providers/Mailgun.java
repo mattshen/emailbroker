@@ -1,18 +1,23 @@
 package io.github.mattshen.emailbroker.services.providers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.mattshen.emailbroker.Configuration;
+import io.github.mattshen.emailbroker.Constants;
 import io.github.mattshen.emailbroker.Utils;
 import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
 import io.github.mattshen.emailbroker.models.SimpleEmailRequest;
 import io.github.mattshen.emailbroker.services.EmailDeliveryProvider;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
-@Component("mailgun")
+@Component(Constants.EMAIL_PROVIDER_MAILGUN)
 public class Mailgun implements EmailDeliveryProvider {
 
     private OkHttpClient httpClient;
@@ -35,10 +40,16 @@ public class Mailgun implements EmailDeliveryProvider {
                 .build();
 
         try (Response response = httpClient.newCall(req).execute()) {
-            return new EmailDeliveryResponse("test", response.isSuccessful(), response.body().string());
+            Map<String, Object> responseBody = new ObjectMapper().readerFor(HashMap.class)
+                    .readValue(response.body().string());
+            return new EmailDeliveryResponse(
+                    response.isSuccessful(),
+                    response.code(),
+                    String.valueOf(responseBody.get("id"))
+            );
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            return new EmailDeliveryResponse(false, e.getMessage());
+            return new EmailDeliveryResponse(false, HttpStatus.BAD_REQUEST.value(), "");
         }
 
     }

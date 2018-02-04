@@ -24,7 +24,7 @@ public class Endpoints {
     @ResponseBody
     public ResponseEntity<ApiResponse> send(@Valid @RequestBody SimpleEmailRequest request) {
         EmailDeliveryResponse deliveryResponse = service.send(request);
-        return ResponseEntity.ok(new ApiResponse(deliveryResponse.isSuccess(), deliveryResponse.getMessage()));
+        return ResponseEntity.ok(new ApiResponse(deliveryResponse.isSuccess(), deliveryResponse));
     }
 
 }
