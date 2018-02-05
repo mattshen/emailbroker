@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.mattshen.emailbroker.Configuration;
 import io.github.mattshen.emailbroker.Constants;
 import io.github.mattshen.emailbroker.Utils;
-import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
+import io.github.mattshen.emailbroker.models.ProviderResponse;
 import io.github.mattshen.emailbroker.models.SimpleEmailRequest;
 import io.github.mattshen.emailbroker.services.EmailDeliveryProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -29,12 +29,13 @@ public class Mailgun implements EmailDeliveryProvider {
         this.conf = conf;
     }
 
+    @Override
     public String name() {
         return Constants.EMAIL_PROVIDER_MAILGUN;
     }
 
     @Override
-    public EmailDeliveryResponse send(SimpleEmailRequest request) {
+    public ProviderResponse send(SimpleEmailRequest request) {
 
         String creds = Credentials.basic(conf.getMailgunApiUser(), conf.getMailgunApiPassword());
         Request req = new Request.Builder()
@@ -46,14 +47,14 @@ public class Mailgun implements EmailDeliveryProvider {
         try (Response response = httpClient.newCall(req).execute()) {
             Map<String, Object> responseBody = new ObjectMapper().readerFor(HashMap.class)
                     .readValue(response.body().string());
-            return new EmailDeliveryResponse(
+            return new ProviderResponse(
                     response.isSuccessful(),
                     response.code(),
-                    String.valueOf(responseBody.get("id"))
-            );
+                    String.valueOf(responseBody.get("id")),
+                    name());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            return new EmailDeliveryResponse(false, HttpStatus.BAD_REQUEST.value(), "");
+            return new ProviderResponse(false, HttpStatus.BAD_REQUEST.value(), "", name());
         }
 
     }

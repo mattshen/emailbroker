@@ -11,9 +11,9 @@ import lombok.Setter;
 public class ApiResponse {
 
     private boolean success;
-    private EmailDeliveryResponse deliveryResult;
+    private ProviderResponse deliveryResult;
 
-    public ApiResponse(boolean success, EmailDeliveryResponse deliveryResult) {
+    public ApiResponse(boolean success, ProviderResponse deliveryResult) {
         this.success = success;
         this.deliveryResult = deliveryResult;
     }

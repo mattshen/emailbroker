@@ -1,6 +1,6 @@
 package io.github.mattshen.emailbroker;
 
-import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
+import io.github.mattshen.emailbroker.models.ProviderResponse;
 import io.github.mattshen.emailbroker.models.SimpleEmailRequest;
 import io.github.mattshen.emailbroker.services.EmailDeliveryService;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class EndpointsTest {
     @Test
     public void valid_input_should_yield_200() throws Exception {
 
-        EmailDeliveryResponse res = new EmailDeliveryResponse(true, 200, "abc123");
+        ProviderResponse res = new ProviderResponse(true, 200, "abc123", null);
         when(service.send((SimpleEmailRequest) notNull())).thenReturn(res);
 
         String content = TestUtils.loadTextFile("valid_email_request.json");
@@ -45,7 +45,7 @@ public class EndpointsTest {
 
     @Test
     public void invalid_email_should_yield_400() throws Exception {
-        EmailDeliveryResponse res = new EmailDeliveryResponse(true, 200, "abc123");
+        ProviderResponse res = new ProviderResponse(true, 200, "abc123", null);
         when(service.send((SimpleEmailRequest) notNull())).thenReturn(res);
 
         String content = TestUtils.loadTextFile("email_request_with_invalid_email.json");
@@ -57,7 +57,7 @@ public class EndpointsTest {
 
     @Test
     public void missing_info_should_yield_400() throws Exception {
-        EmailDeliveryResponse res = new EmailDeliveryResponse(true, 200, "abc123");
+        ProviderResponse res = new ProviderResponse(true, 200, "abc123", null);
         when(service.send((SimpleEmailRequest) notNull())).thenReturn(res);
 
         String content = TestUtils.loadTextFile("email_request_missing_infomation.json");

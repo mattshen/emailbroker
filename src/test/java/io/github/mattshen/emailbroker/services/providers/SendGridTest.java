@@ -1,7 +1,7 @@
 package io.github.mattshen.emailbroker.services.providers;
 
 import io.github.mattshen.emailbroker.TestUtils;
-import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
+import io.github.mattshen.emailbroker.models.ProviderResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +18,7 @@ public class SendGridTest {
 
     @Test
     public void send_should_work() {
-        EmailDeliveryResponse res = sendGrid.send(TestUtils.createSimpleEmailRequest());
+        ProviderResponse res = sendGrid.send(TestUtils.createSimpleEmailRequest());
         Assert.assertTrue(res.isSuccess());
     }
 }

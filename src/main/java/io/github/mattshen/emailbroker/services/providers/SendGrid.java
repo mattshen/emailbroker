@@ -6,7 +6,7 @@ import io.github.mattshen.emailbroker.Configuration;
 import io.github.mattshen.emailbroker.Constants;
 import io.github.mattshen.emailbroker.Utils;
 import io.github.mattshen.emailbroker.models.Email;
-import io.github.mattshen.emailbroker.models.EmailDeliveryResponse;
+import io.github.mattshen.emailbroker.models.ProviderResponse;
 import io.github.mattshen.emailbroker.models.SimpleEmailRequest;
 import io.github.mattshen.emailbroker.services.EmailDeliveryProvider;
 import lombok.AllArgsConstructor;
@@ -19,9 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Component(Constants.EMAIL_PROVIDER_SENDGRID)
@@ -37,15 +35,15 @@ public class SendGrid implements EmailDeliveryProvider {
         this.conf = conf;
     }
 
+    @Override
     public String name() {
         return Constants.EMAIL_PROVIDER_SENDGRID;
     }
 
     @Override
-    public EmailDeliveryResponse send(SimpleEmailRequest request) {
+    public ProviderResponse send(SimpleEmailRequest request) {
 
         ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
         try {
             String data = mapper.writeValueAsString(buildSendGridRequest(request));
 
@@ -57,19 +55,18 @@ public class SendGrid implements EmailDeliveryProvider {
                     .build();
 
             try (Response response = httpClient.newCall(req).execute()) {
-                return new EmailDeliveryResponse(
+                return new ProviderResponse(
                         response.isSuccessful(),
                         response.code(),
-                        response.header("X-Message-Id")
-                );
+                        response.header("X-Message-Id"),
+                        name());
             } catch (IOException e) {
                 throw e;
             }
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            return new EmailDeliveryResponse(false, HttpStatus.BAD_REQUEST.value(), "");
+            return new ProviderResponse(false, HttpStatus.BAD_REQUEST.value(), "", name());
         }
-
     }
 
     private SendGridRequest buildSendGridRequest(SimpleEmailRequest request) {
