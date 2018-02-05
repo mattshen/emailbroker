@@ -60,12 +60,13 @@ public class SendGrid implements EmailDeliveryProvider {
                         response.code(),
                         response.header("X-Message-Id"),
                         name());
-            } catch (IOException e) {
-                throw e;
             }
+
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            return new ProviderResponse(false, HttpStatus.BAD_REQUEST.value(), "", name());
+            ProviderResponse res = new ProviderResponse(false, HttpStatus.BAD_REQUEST.value(), "", name());
+            res.setMessage("Failed to call email delivery provider");
+            return res;
         }
     }
 

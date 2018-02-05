@@ -45,16 +45,25 @@ public class Mailgun implements EmailDeliveryProvider {
                 .build();
 
         try (Response response = httpClient.newCall(req).execute()) {
-            Map<String, Object> responseBody = new ObjectMapper().readerFor(HashMap.class)
-                    .readValue(response.body().string());
+            //extract mailgun id
+            String id = "";
+            if (response.isSuccessful()) {
+                Map<String, Object> responseBody = new ObjectMapper().readerFor(HashMap.class)
+                        .readValue(response.body().string());
+                id = String.valueOf(responseBody.get("id"));
+            }
+
             return new ProviderResponse(
                     response.isSuccessful(),
                     response.code(),
-                    String.valueOf(responseBody.get("id")),
+                    id,
                     name());
+
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            return new ProviderResponse(false, HttpStatus.BAD_REQUEST.value(), "", name());
+            ProviderResponse res = new ProviderResponse(false, HttpStatus.BAD_REQUEST.value(), "", name());
+            res.setMessage("Failed to call email delivery provider");
+            return res;
         }
 
     }
