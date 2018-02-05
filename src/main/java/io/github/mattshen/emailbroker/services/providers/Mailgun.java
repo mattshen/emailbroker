@@ -53,6 +53,10 @@ public class Mailgun implements EmailDeliveryProvider {
                 id = String.valueOf(responseBody.get("id"));
             }
 
+            if (!response.isSuccessful()) {
+                log.warn(response.body().string());
+            }
+
             return new ProviderResponse(
                     response.isSuccessful(),
                     response.code(),

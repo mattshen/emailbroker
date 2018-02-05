@@ -55,6 +55,9 @@ public class SendGrid implements EmailDeliveryProvider {
                     .build();
 
             try (Response response = httpClient.newCall(req).execute()) {
+                if (!response.isSuccessful()) {
+                    log.warn(response.body().string());
+                }
                 return new ProviderResponse(
                         response.isSuccessful(),
                         response.code(),
