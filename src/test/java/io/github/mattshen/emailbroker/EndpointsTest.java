@@ -2,9 +2,11 @@ package io.github.mattshen.emailbroker;
 
 import io.github.mattshen.emailbroker.models.ProviderResponse;
 import io.github.mattshen.emailbroker.models.SimpleEmailRequest;
+import io.github.mattshen.emailbroker.repositories.EmailDeliveryLogRepository;
 import io.github.mattshen.emailbroker.services.EmailDeliveryService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,6 +31,9 @@ public class EndpointsTest {
 
     @MockBean
     EmailDeliveryService service;
+
+    @MockBean
+    EmailDeliveryLogRepository repository;
 
     @Test
     public void valid_input_should_yield_200() throws Exception {
